@@ -1,0 +1,187 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{times}
+\usepackage[margin=0.5in]{geometry}
+
+\title{10715 Cheatsheet}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+\textbf{Decision Tree}
+
+information gain(S, A) = entropy(S) = $\sum_v$ $\frac{S_v}{S}$entropy($S_v$), entropy(S) = $\sum p_i log_2 p_i$
+
+\noindent
+\textbf{Perceptron}
+
+if data has margin $\gamma$ and all data points inside a ball of radius $R$, then Perceptron makes $\leq (R/\gamma)^2$ mistakes.
+
+\noindent
+\textbf{MLE and MAP}
+
+All kinds of distributions: \\
+Bernoulli: $P(x=1)=p, P(x=0)=1-p$ \\
+Beta: $\theta \sim Beta(\beta_{H}, \beta_{T}): P(\theta) = \frac{\theta^{\beta_{H}-1} (1-\theta)^{\beta_{T}-1}}{B(\beta_{H}, \beta_{T})}$ \\
+Dirichlet: $\theta \sim Dirichlet(\beta_1, \cdots, \beta_k): P(\theta) = \frac{\prod_{i=1}^k \theta_i^{\beta_i -1}}{B(\beta_1, \cdots, \beta_k)}$
+
+\noindent
+Hoeffding inequality: For any $\epsilon > 0$, $P(|\hat{\theta}_{MLE}-\theta| \geq \epsilon) \leq 2e^{-2n\epsilon^2}$
+
+\noindent
+\underline{generative}: assume $P(Y)$ and $P(X|Y)$ -- NB \\
+\underline{discriminative}: assume $P(Y|X)$ -- LR, SVM
+
+\noindent
+\textbf{Logistic Regression}
+
+$P(Y=1|X) = \frac{exp(w_0 + \sum_i w_i x_i)}{exp(w_0 + \sum_i w_i x_i) + 1}$, sigmoid: $\frac{1}{1+exp(-z)}$
+
+\noindent
+\textbf{Linear Regression} \\
+min $\frac{1}{n} \sum_i (x_i \beta - y_i)^2 = \frac{1}{n} (A\beta - Y)^{T}(A\beta-Y)$: gradient=0 $\rightarrow A^{T}A\beta = A^{T}Y \rightarrow \beta = ...,$ if $A^{T}A$ is invertible. Or use SGD to solve it efficiently.
+
+\noindent
+\textbf{Kernel methods}
+
+$K(x,z)=\Phi(x) \cdot \Phi(z)$
+
+Linear: $K(x,z) = x \cdot z$; Polynomial: $K(x,z)=(x \cdot z)^d~ or~(x \cdot z +1)^d$; Gaussian: $K(x,z)=exp[-\frac{||x-z||^2}{2\sigma^2}]$; Laplace: $K(x,z) = exp[-\frac{||x-z||}{2\sigma^2}]$
+
+\noindent
+Kernel matrix: (symmetric + $a^{T}Ka \geq 0$) = $K$ is positive semi-definite.
+
+\noindent
+\textbf{Sample complexity and PAC learning theory}
+
+consistent/realizable case: (PAC) $m \geq \frac{1}{\epsilon} [ln(|H|) + ln(\frac{1}{\delta})]$ so that with prob. 1-$\delta$, all $h \in H$ with $err_D(h) \geq \epsilon$ have $err_s(h) > 0$.
+
+(statistical: with prob. at least 1-$\delta$, for all $h \in H s.t. $ $err_s(h)=0$, we have $err_D(h) \leq \frac{1}{m}(ln|H| + ln(\frac{1}{\delta}))$)
+
+\noindent
+agnostic case (uniform convergence): with prob. 1-$\delta$, all $h \in H$ have $|err_D(h)-err_S(h)| \leq \epsilon$, for $m \geq \frac{1}{2\epsilon^2}[ln(|H|) + ln(\frac{2}{\delta})]$
+
+(statistical: with prob. at least 1-$\delta$, for all $h \in H$: $err_D(h) \leq err_S(h) + \sqrt{\frac{1}{2m}(ln(2|H|) + ln(\frac{1}{\delta}))}$
+
+For \textbf{infinite} H-space:\\
+realizable: $m \geq \frac{2}{m}[log_2(2H[2m]) + log_2(\frac{1}{\delta})]$ ($H[m] = O(m^{VCdim(H)})$) $\rightarrow$ $m=O(\frac{1}{\epsilon}[VCdim(H)log(\frac{1}{\epsilon}) + log(\frac{1}{\delta})])$
+
+(statistical: $err_D(h) \leq err_S(h) + \sqrt{\frac{1}{2m}(VCdim(H) + ln(\frac{1}{\delta}))}$)
+
+\noindent
+agnostic case (uniform convergence): $m = O( \frac{1}{\epsilon^2}[VCdim(H) + log_2(\frac{1}{\delta})])$ labels are sufficient so that with prob. 1-$\delta$, all $h \in H$ with $|err_D(h)-err_S(h)| \leq \epsilon$
+
+(statistical: $err_D(h) \leq err_S(h) + O(\sqrt{\frac{1}{2m}(VCdim(H)ln(\frac{em}{VCdim(H)}) + ln(\frac{1}{\delta})})$))
+
+\noindent
+\textbf{Rademacher complexity bound}
+
+Data distribution dependent (nice property) \\
+ 1. empirical Rademacher Complexity bound of a function class $F$: $\hat{R}_m(F) = E_{\sigma_1, \cdots, \sigma_m}[sup_{f \in F} \frac{1}{m} \sum_{i} \sigma_i f(z_i)]$.  $\sigma_i$ are random variables chosen uniformly from $\{-1,1\}$ and $\{z_i\}$ are samples generated from a data distribution $D$. \\
+ 2. Rademacher Complexity: $R_m(F) = E_S[\hat{R}_m(F)]$ \\
+ 3. Theorem:
+ 
+ $E_D[f(z)] \leq E_S[f(z)] + 2R_m(F) + \sqrt{\frac{ln(2/\delta)}{2m}}$ 
+ 
+ $E_D[f(z)] \leq E_S[f(z)] + 2\hat{R}_m(F) + 3\sqrt{\frac{ln(2/\delta)}{m}}$ \\
+ 4. For binary classifiers, $R_S(F) \leq \sqrt{\frac{ln(2H[S])}{m}}$, 
+ $R_S(F) \leq \sqrt{\frac{2dln(\frac{em}{d})}{m}}$
+ 
+ \noindent
+ \textbf{SVM}
+ 
+ Primal: min~$W^2+C\sum_i \xi_i$ s.t. $y_iw\cdot x_i \geq 1-\xi_i, \xi_i \geq 0$ \\
+ Dual: min~$\frac{1}{2}\sum_i\sum_j y_i y_j \alpha_i \alpha_j x_i \cdot x_j = \sum_i \alpha_i$ s.t., $0 \leq \alpha_i \leq C_i, \sum_i y_i \alpha_i =0$ \\
+ final classifier: $w=\sum_i \alpha_i y_i x_i$, support vectors: the points $x_i$ for which $\alpha_i \neq 0$
+ 
+ Bounds:
+ 
+ $\hat{R}_S(H) \leq \sqrt{\frac{R^2\Lambda^2}{m}}$, samples $S \subseteq \{x: ||x|| \leq R\}$, $H$ is linear classifiers: $H=\{x \rightarrow w \cdot x: ||w|| \leq \Lambda\}$
+ 
+ Margin-based bounds:
+ 
+ for any confidence margin parameter $\rho$ and any set of $m$ samples, the empirical margin loss $\hat{E}_{\rho}(h)$ is: $\frac{1}{m}\sum_{i=1}^m 1_{y_i h(x_i) < \rho}$ \\
+ $H, S$ is the same as defined before, for any $\delta > 0$, with prob. at least $1-\delta$, for any $h \in H$: $E_D(h) \leq \hat{E}_{\rho}(h) + 2 \sqrt{\frac{R^2\Lambda^2 / \rho^2}{m}} + 3 \sqrt{\frac{log \frac{2}{\delta}}{2m}}$
+ 
+ 
+ \noindent
+ \textbf{Boosting}
+ 
+Training data distribution $D$ at round $t+1$: $D_{t+1}(i) = \frac{D_t(i)}{Z_t}e^{\{-\alpha_t\}}$, if $y_i = h_t(x_i)$;  $D_{t+1}(i) = \frac{D_t(i)}{Z_t}e^{\{\alpha_t\}}$ otherwise. $\alpha_t=\frac{1}{2} ln(\frac{1-\epsilon_t}{\epsilon_t})$, $z_t = 2\sqrt{\epsilon_t(1-\epsilon_t)}$ \\
+final weight: $\sum_t \alpha_t h_t(x)$; Bound: $\epsilon_t = 1/2-\gamma_t$, then $err_S(H_{final}) \leq exp[-2 \sum_t \gamma_t ^2]$~ [cannot guarantee zero training error if the data is not separable]
+
+\noindent
+\textbf{cross validation and generalization error}
+
+cross validation: partition the whole dataset into 5 or 10 parts; train on n-1 partitions and test on the other one; calculate the average test error.  \\
+For all sets of hyper-parameters, repeat the above process and pick the best set of hyper-parameters.
+
+$err_D(h) \leq err_S(h) + R_m(H) + \cdots$, when complexity of $H$ increases, $R_m(H)$ will dominate the bound
+
+\noindent
+\textbf{Neural Networks}
+
+Data dependent bounds for Deep Networks: With high probability, every function $f_W$ with $R_W \leq R$ satisfies $Pr(M(f_W(x), y) \leq 0) \leq \frac{1}{n}\sum_{i=1}^n 1[M(f_W(x_i), y_i) \leq \gamma] + \hat{O}(\frac{RL}{\gamma \sqrt{n}})$. $L$ is the number of layers, $W$ is the weight: $\{w_1, \cdots, w_L\}$. $R_W:= \prod_{i=1}^L ||W_i||_{*} \cdot$ some complicated term
+
+\noindent
+\textbf{Active Learning}
+
+Active SVM: at each round, find $W_t$ the current solution, then ask to label the example closest to the current separator. [can suffer from sampling bias]
+
+Disagreement based: pick a few points at random from the current region of disagreement and query their labels. Then update the version region. Repeat.
+[version space is with respect to hypothesis functions while region of disagreement is with respect to data space]
+
+\noindent
+\textbf{Semi-supervised Learning}
+
+transductive SVM: optimize the margin for both labeled data and unlabeled data at the same time. One heuristic: flipping labels 
+
+Co-training: label the data points which one algorithm is confident about, but another algorithm is not [features need to be independent]
+
+Graph-based methods
+
+\noindent
+\textbf{Clustering}
+
+One heuristic: Lloyd's method: 1) compute the centers; 2) assign data points \\
+K-means++: $D(x)$: the distance of point $x$ to the nearest center. Choose the center with prob. proportional to $D^2(x)$. \\
+Hierarchical clustering: bottom up: start with each data point a cluster; repeatedly merge two closest clusters 
+
+[single linkage: dist(A,B)=$min_{x \in A, x' \in B}$ $dist(x,x')$; complete linkage: dist(A,B)=$max_{x \in A, x' \in B} dist(x,x')$]
+
+\noindent
+\textbf{Dimension Reduction}
+
+find $v$ to maximize sample variance of projection: $\frac{1}{n}\sum_i (v^{T}x_i)^2$ = $\frac{1}{n} v^{T}xx^{T}v$ $\rightarrow$ $\frac{1}{n}xx^{T}v = \lambda v$, $v$ is the eigenvector of the covariance matrix $\frac{1}{n}xx^{T}$. ~~ reconstruction error: $\frac{1}{n} \sum_{i=1}^{n} || x_i - (v^{T}x_i)v||^2$
+
+Kernel PCA: replace `$X^{T}X$' with $K$. $\rightarrow$ $\frac{1}{n}K\alpha = \lambda \alpha$. Only need to do eigen-decomposition on $K$ to calculate the eigen vector.
+
+\noindent
+\textbf{Online Learning}
+
+1. Assume there is $1$ perfect expert: Halving algorithm: $O(lgn)$ mistakes.
+
+2. Assume there is no such `perfect' expert: 
+
+(a) Iterative halving algorithm: $O(lgn)[OPT+1]$ mistakes. $OPT$ is the number of mistakes the best expert makes.
+
+(b) Weighted majority: when there is a mistake, lower the expert's weight by half rather than cross off the expert. Predict 1 if $\sum_{i:x_i=1} w_i > \sum_{i:x_i=0} w_i$
+
+(c) Randomized weighted majority: when there is a mistake, lower the expert's weight by $1-\epsilon$. Predict (1, 0) with prob. proportional to $(\sum_{i:x_i=1} w_i, \sum_{i:x_i=0} w_i)$. [this can smooth out the worst case] $<==>$ select an expert with prob. proportional to his weight. If wrong, lower the expert's weight by $1-\epsilon$ and then normalize all weights. $E[\#mistakes] \leq (1+\epsilon)OPT + \epsilon^{-1}log(n)$
+
+\noindent
+\textbf{Reinforcement Learning}
+
+Q-learning: Don't know $P(S_{t+1} | S_t, a_t)$ 
+
+$Q(S,a) = E[r(S,a)] + \gamma E_{s'|a}[V^{*}(S')]$
+
+if $P(s'|S,a)$ is deterministic, $Q(S,a) = r(S,a) + \gamma V^{*}(S') = r(S,a) + \gamma max_{a'} Q(S', a')$
+
+
+\end{document}
